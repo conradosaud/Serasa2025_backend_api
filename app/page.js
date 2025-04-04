@@ -13,7 +13,18 @@ export default function Home() {
 
     function buscaPorID(){}
     function buscaPorNome(){}
-    function insereProduto(){}
+
+    async function insereProduto(){
+
+        const obj = {
+            nome: "Calça Jeans",
+            preco: 15.90,
+            quantidade: 13
+        }
+
+        const response = await axios.post("http://localhost:3000/api/produtos", obj)
+    }
+
     function atualizaProduto(){}
     function removeProduto(){}
 
