@@ -11,6 +11,7 @@ export default function Home() {
     const [ preco, alteraPreco ] = useState([])
     const [ quantidade, alteraQuantidade ] = useState([])
 
+    const [ editando, alteraEditando ] = useState(0)
     const [ pesquisa, alteraPesquisa ] = useState("")
 
     async function buscaTodos(){
@@ -25,9 +26,7 @@ export default function Home() {
 
     function buscaPorNome(){}
 
-    async function insereProduto(e){
-
-        e.preventDefault()
+    async function insereProduto(){
 
         const obj = {
             nome: nome,
@@ -42,8 +41,29 @@ export default function Home() {
 
     }
 
-    function atualizaProduto(){}
-    function removeProduto(){}
+    async function atualizaProduto(){
+
+        const obj = {
+            nome: nome,
+            preco: preco,
+            quantidade: quantidade
+        }
+
+        const response = await axios.put("http://localhost:3000/api/produtos/"+editando, obj)
+
+        buscaTodos()
+
+        alteraEditando(0)
+        alteraNome("")
+        alteraPreco("")
+        alteraQuantidade("")
+
+    }
+
+    async function removeProduto( id ){
+        await axios.delete("http://localhost:3000/api/produtos/"+id)
+        buscaTodos()
+    }
 
     function formataData( valor ){
         let data = valor.split("T")[0]
@@ -58,6 +78,24 @@ export default function Home() {
         hora = hora[0]+":"+hora[1]
 
         return data+" às "+hora
+
+    }
+
+    function montaEdicao( produto ){
+        alteraEditando( produto.id )
+        alteraNome( produto.nome )
+        alteraPreco( produto.preco )
+        alteraQuantidade( produto.quantidade )
+    }
+
+    function enviaFormulario(e){
+        e.preventDefault()
+
+        if( editando == 0 ){
+            insereProduto()
+        }else{
+            atualizaProduto()
+        }
 
     }
 
@@ -119,12 +157,19 @@ export default function Home() {
                         </tr>
                         {
                             produtos.map( i =>
-                                <tr onClick={ ()=> redirect("/produto/1") } >
+                                <tr  >
                                     <td>{i.id}</td>
                                     <td>{i.nome}</td>
                                     <td>R$ {i.preco.toFixed(2)}</td>
                                     <td>{i.quantidade}</td>
                                     <td>{ formataData(i.registro) }</td>
+                                    
+                                    <td>
+                                        <button onClick={ ()=> redirect("/produto/"+i.id) } >Ver</button>
+                                        <button onClick={ ()=> montaEdicao(i) } >Editar</button>
+                                        <button onClick={ ()=> removeProduto(i.id) } >Remover</button> 
+                                    </td>
+
                                 </tr>
                             )
                         }
@@ -137,17 +182,18 @@ export default function Home() {
 
             <h2>Cadastro</h2>
 
-            <form onSubmit={ (e)=> insereProduto(e) } >
-                <label> Digite o nome do produto: <br/> <input onChange={(e)=> alteraNome(e.target.value) } /> </label>
+            <form onSubmit={ (e)=> enviaFormulario(e) } >
+                <label> Digite o nome do produto: <br/> <input onChange={(e)=> alteraNome(e.target.value) } value={nome} /> </label>
                 <br/>
-                <label> Digite o preço: <br/> <input onChange={(e)=> alteraPreco(e.target.value) } /> </label>
+                <label> Digite o preço: <br/> <input onChange={(e)=> alteraPreco(e.target.value) } value={preco} /> </label>
                 <br/>
-                <label> Digite a quantidade: <br/> <input onChange={(e)=> alteraQuantidade(e.target.value) } /> </label>
+                <label> Digite a quantidade: <br/> <input onChange={(e)=> alteraQuantidade(e.target.value) } value={quantidade} /> </label>
                 <br/>
                 <button>Salvar</button>
+
             </form>
 
-
+            <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
 
         </div>
     );

@@ -1,6 +1,6 @@
 'use client'
 import axios from "axios";
-import { useParams } from "next/navigation";
+import { redirect, useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 function Produto() {
@@ -23,6 +23,8 @@ function Produto() {
     return (
         <div>
             <h1>Detalhes do produto { id } </h1>
+
+            <button onClick={ ()=>redirect("/") } >Voltar</button>
 
             <hr/>
 
