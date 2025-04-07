@@ -1,5 +1,6 @@
 'use client'
 import axios from "axios";
+import { redirect } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function Home() {
@@ -10,12 +11,18 @@ export default function Home() {
     const [ preco, alteraPreco ] = useState([])
     const [ quantidade, alteraQuantidade ] = useState([])
 
+    const [ pesquisa, alteraPesquisa ] = useState("")
+
     async function buscaTodos(){
         const response = await axios.get("http://localhost:3000/api/produtos")
         alteraProdutos( response.data )
     }
 
-    function buscaPorID(){}
+    async function buscaPorID( id ){
+        const response = await axios.get("http://localhost:3000/api/produtos/"+id)
+        alteraProdutos( response.data )
+    }
+
     function buscaPorNome(){}
 
     async function insereProduto(e){
@@ -94,6 +101,10 @@ export default function Home() {
 
             <hr/>
 
+            <p>Busca de produtos. Digite o ID:</p>
+            <input onChange={ (e)=> alteraPesquisa(e.target.value) } />
+            <button onClick={ ()=> buscaPorID(pesquisa) } >Pesquisar</button>
+
             <h2>Listagem</h2>
 
             {
@@ -108,7 +119,7 @@ export default function Home() {
                         </tr>
                         {
                             produtos.map( i =>
-                                <tr>
+                                <tr onClick={ ()=> redirect("/produto/1") } >
                                     <td>{i.id}</td>
                                     <td>{i.nome}</td>
                                     <td>R$ {i.preco.toFixed(2)}</td>
@@ -135,6 +146,8 @@ export default function Home() {
                 <br/>
                 <button>Salvar</button>
             </form>
+
+
 
         </div>
     );
